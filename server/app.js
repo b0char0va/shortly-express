@@ -11,8 +11,9 @@ const app = express();
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
+app.use(cookieParser);
+app.use(Auth.createSession);
 app.use(partials());
-//app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
@@ -20,11 +21,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 
 app.get('/', 
-(req, res) => {
-  cookieParser(req, res, () => {} );
-  console.log(req.cookie);
-  res.render('index');
-});
+  (req, res) => {
+    console.log(req['newPath']);
+    if(req['newPath'] === 'as is'){
+      res.render('index');
+    }else{
+      var path = req['newPath'];
+      console.log('WHHHHHHHHHHHHHHHHHHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY')
+      res.render(path);
+    }  
+  }
+);
 
 app.get('/create', 
 (req, res) => {
@@ -83,8 +90,13 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 //added after
-app.get('/login', 
-(req, res) => {
+app.get('/login', (req, res) => {
+
+  // Auth.createSession(req,res, ()=>{})
+  console.log(req.hasOwnProperty("newPath"));
+  if (req['newPath'] === 'as is') {
+    res.render('index');
+  }
   res.render('login');
 });
 
@@ -105,17 +117,17 @@ app.post('/signup', (req, res) => {
   };
   
   models.Users.get(obj)
-  .then((storedData) => {
-    if (!storedData) {
-      models.Users.create(req.body)
-      .then((data) => res.redirect("/"))
-    } else {
-      res.redirect("/login")
-    }
-  }).catch((err)=>{
+    .then((storedData) => {
+      if (!storedData) {
+        models.Users.create(req.body)
+         .then((data) => res.redirect("/"))
+      } else {
+        res.redirect("/login")
+      }
+    }).catch((err)=>{
       console.log('user doesnt exist -',err);
       res.send(err);
-  })
+    });
 });
 
 

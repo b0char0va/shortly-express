@@ -1,15 +1,24 @@
 const parseCookies = (req, res, next) => {
+    
+  if (!req.headers.cookie) {
+    req.cookies = {};
 
-  var splitCookies = req.headers.cookie.split(';');
-  var parsedCookie;
+  } else {
+    var splitCookies = req.headers.cookie.split(';');
+    var parsedCookieName = '';
+    var parsedCookie;
+    var cookieObj = {};
 
-  splitCookies.forEach((cookie) => {
-    if (cookie.slice(0,10) === ' shortlyid') {
-      parsedCookie = cookie.split('=')[1];
-    }
-  });
+    splitCookies.forEach((cookie) => {
+      var splitCookie = cookie.split('=');
+      parsedCookieName = splitCookie[0].trim();
+      parsedCookie = splitCookie[1];
+      cookieObj[parsedCookieName] = parsedCookie;
+    });
 
-  req.cookie = {'shortlyid' : parsedCookie};
+    req.cookies = cookieObj;
+  }
+
   next();
 };
 
