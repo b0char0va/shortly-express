@@ -5,12 +5,14 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const cookieParser = require('./middleware/cookieParser');
 
 const app = express();
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 app.use(partials());
+app.use(cookieParser);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
@@ -19,11 +21,13 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/', 
 (req, res) => {
+  //console.log(req.headers.cookie);
   res.render('index');
 });
 
 app.get('/create', 
 (req, res) => {
+  //console.log(req.headers);
   res.render('index');
 });
 
@@ -77,6 +81,41 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+//added after
+app.get('/login', 
+(req, res) => {
+  res.render('login');
+});
+
+
+app.post('/login', (req, res) => {
+  Auth.createSession(req, res, ()=>{return});
+});
+
+app.get('/signup', (req, res) => {
+  res.render('signup');
+});
+
+
+app.post('/signup', (req, res) => {
+
+ var obj = {
+    username : req.body.username
+  };
+  
+  models.Users.get(obj)
+  .then((storedData) => {
+    if (!storedData) {
+      models.Users.create(req.body)
+      .then((data) => res.redirect("/"))
+    } else {
+      res.redirect("/login")
+    }
+  }).catch((err)=>{
+      console.log('user doesnt exist -',err);
+      res.send(err);
+  })
+});
 
 
 
