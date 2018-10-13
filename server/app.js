@@ -12,7 +12,7 @@ const app = express();
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 app.use(partials());
-app.use(cookieParser);
+//app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
@@ -21,7 +21,8 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/', 
 (req, res) => {
-  //console.log(req.headers.cookie);
+  cookieParser(req, res, () => {} );
+  console.log(req.cookie);
   res.render('index');
 });
 

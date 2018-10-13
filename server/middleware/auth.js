@@ -19,7 +19,7 @@ module.exports.createSession = (req, res, next) => {
             .then((data) => {
               // res.cookie(data.hash);
               // console.log(data.hash);
-              res.cookie('cookieName', data.hash, { maxAge: 900000, httpOnly: true })
+              res.cookie('shortlyid', data.hash)
               // console.log('Sessions data: ', data);
               res.redirect("/");
             })

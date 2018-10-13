@@ -1,9 +1,15 @@
 const parseCookies = (req, res, next) => {
-  console.log(req);
-  var cookie = req.headers.cookie.split('cookieName=');
-  // console.log(cookie);
-  var parsedCookie = cookie[cookie.length -1];
-  req.cookie({cookie:parsedCookie});
+
+  var splitCookies = req.headers.cookie.split(';');
+  var parsedCookie;
+
+  splitCookies.forEach((cookie) => {
+    if (cookie.slice(0,10) === ' shortlyid') {
+      parsedCookie = cookie.split('=')[1];
+    }
+  });
+
+  req.cookie = {'shortlyid' : parsedCookie};
   next();
 };
 
